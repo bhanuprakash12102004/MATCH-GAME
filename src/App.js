@@ -257,62 +257,71 @@ class App extends Component {
       isGameOver: false,
     }
   }
+
   componentDidMount() {
     this.timerId = setInterval(this.startCounter, 1000)
   }
+
   componentWillUnmount = () => {
     clearInterval(this.timerId)
+    this.timerId = null
   }
+
   startCounter = () => {
     const {time} = this.state
-    if (time <= 0) {
+    if (time <= 1) {
       clearInterval(this.timerId)
+      this.timerId = null
       this.setState({
         isGameOver: true,
+        time: 0,
       })
     } else {
-      const updatedTime = time - 1
-      this.setState(prev => {
-        return {
-          time: updatedTime,
-        }
-      })
+      this.setState(prev => ({
+        time: prev.time - 1,
+      }))
     }
   }
+
   changeToAnimalsCategory = () => {
     this.setState({
       activeTabId: 'ANIMAL',
     })
   }
+
   changeToFruitCategory = () => {
     this.setState({
       activeTabId: 'FRUIT',
     })
   }
+
   changeToPlacesCategory = () => {
     this.setState({
       activeTabId: 'PLACE',
     })
   }
+
   clickedOnImage = id => {
     const {displayedImageid} = this.state
     if (displayedImageid === id) {
       const imageLinkid =
         imagesList[Math.floor(Math.random() * imagesList.length)].id
-      this.setState(prev => {
-        return {
-          score: prev.score + 1,
-          displayedImageid: imageLinkid,
-        }
-      })
+      this.setState(prev => ({
+        score: prev.score + 1,
+        displayedImageid: imageLinkid,
+      }))
     } else {
       clearInterval(this.timerId)
+      this.timerId = null
       this.setState({
         isGameOver: true,
       })
     }
   }
+
   playAgain = () => {
+    clearInterval(this.timerId)
+    this.timerId = null
     this.setState({
       score: 0,
       filteredImages: imagesList,
@@ -321,8 +330,9 @@ class App extends Component {
       displayedImageid: imagesList[0].id,
       isGameOver: false,
     })
-    const timer = setInterval(this.startCounter, 1000)
+    this.timerId = setInterval(this.startCounter, 1000)
   }
+
   render() {
     const {
       score,
@@ -403,19 +413,17 @@ class App extends Component {
               </li>
             </ul>
             <ul className="all-images">
-              {getDisplayedImages.map(each => {
-                return (
-                  <li key={each.id} className="image-button">
-                    <button
-                      className="buttonn"
-                      type="button"
-                      onClick={() => this.clickedOnImage(each.id)}
-                    >
-                      <img src={each.thumbnailUrl} alt="thumbnail" />
-                    </button>
-                  </li>
-                )
-              })}
+              {getDisplayedImages.map(each => (
+                <li key={each.id} className="image-button">
+                  <button
+                    className="buttonn"
+                    type="button"
+                    onClick={() => this.clickedOnImage(each.id)}
+                  >
+                    <img src={each.thumbnailUrl} alt="thumbnail" />
+                  </button>
+                </li>
+              ))}
             </ul>
           </div>
         ) : (
